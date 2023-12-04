@@ -12,26 +12,24 @@ entity counter_time is
     );
 end counter_time;
 
-architecture behv of counter_time is
-    signal set_load: std_logic_vector(7 downto 0);
+architecture    count   of  counter_time    is
+    signal  set_load:   std_logic_vector(7  downto  0);
 
 begin
-    process(Clock, Set)
+    process(Clock,Set)
     begin
-        if (Set = '1') then
-            set_load <= "01100011";
-            end_time <= '0';
-        elsif (Enable = '1' and rising_edge(Clock)) then
-            if (set_load > "00000000") then
-                set_load <= set_load + Load; 
+        if  Set='1' then
+            set_load<="01100011";
+            end_time<='0';
+        elsif   Enable='1'  and rising_edge(Clock)  then
+            if  set_load>"00000000" then
+                set_load<=set_load+Load; 
             end if;
-            if (set_load <= "00000001" or set_load > "01100011") then
-                end_time <= '1';
-  
+            if  set_load    <=  "00000001"  or  set_load>"01100011" then
+                end_time<='1';
             end if;
         end if;
     end process;
+    t_out<=set_load;
 
-    t_out <= set_load;
-
-end behv;
+end count;
