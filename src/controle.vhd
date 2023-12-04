@@ -1,3 +1,4 @@
+-- vsg_off
 library ieee;
 use ieee.std_logic_1164.all; 
 
@@ -11,13 +12,13 @@ end controle;
 
 architecture arc_controle of controle is
     type    states  is(
-        _check,
-        _init,
-        _play,
-        _result,
-        _select,
-        _sequence,
-        _setup,
+        check,
+        init,
+        play,
+        result,
+        select0,
+        sequence,
+        setup
     );
     signal estado_atual,proximo_estado: states:=init;
 
@@ -31,44 +32,45 @@ begin
         end if;
     end process;
 
-process(estado_atual,enter,end_game_end_sequence,end_round)
+process(estado_atual,enter,end_game,end_sequence,end_round)
 begin
     case estado_atual   is
         when    init    =>
-            proximo_estado  <=  _setup;
+            proximo_estado  <=  setup;
         when    setup   =>
-            if  enter='1' then  proximo_estado  <=  _select;
-            else    proximo_estado  <=  _setup;
+            if  enter='1' then  proximo_estado  <=  select0;
+            else    proximo_estado  <=  setup;
             end if;
-        when    _select =>
-            if  enter='1' then proximo_estado   <=  _sequence;
-            else    proximo_estado <= _select;
+        when    select0 =>
+            if  enter='1' then proximo_estado   <=  sequence;
+            else    proximo_estado <= select0;
             end if;
-        when    _sequence =>
-            if  end_sequence='1' then proximo_estado    <= _play;
-            else    proximo_estado <= _sequence;
+        when    sequence =>
+            if  end_sequence='1' then proximo_estado    <= play;
+            else    proximo_estado <= sequence;
             end if;
-        when _play =>
-            if  enter='1' then proximo_estado <= _check;
+        when play =>
+            if  enter='1' then proximo_estado <= check;
             elsif   end_game='1'    or  end_round='1' then proximo_estado <= proximo_estado;
-            else    proximo_estado  <=  _play;
-        when    _check  =>
-            if  end_game='1' then proximo_estado    <= _result;
-            else    proximo_estado <= _select;
+            else    proximo_estado  <=  play;
             end if;
-        when    _result =>
-            if  enter='1' then proximo_estado <= _init;
-            else    proximo_estado <= _result;
+        when    check  =>
+            if  end_game='1' then proximo_estado    <= result;
+            else    proximo_estado <= select0;
+            end if;
+        when    result =>
+            if  enter='1' then proximo_estado <= init;
+            else    proximo_estado <= result;
             end if;
     end case;
-end process
+end process;
 
-R1<='1' when    estado_atual    =   _init   else    '0';
-E1<='1' when    estado_atual    =   _setup  else    '0';     
-E2<='1' when    estado_atual    =   _select else    '0';
-E3<='1' when    estado_atual    =   _sequence   else    '0';
-E4<='1' when    estado_atual    =   _play   else    '0';
-E5<='1' when    estado_atual    =   _check  else    '0';
-E6<='1' when    estado_atual    =   _result else    '0';
+R1<='1' when    estado_atual    =   init   else    '0';
+E1<='1' when    estado_atual    =   setup  else    '0';     
+E2<='1' when    estado_atual    =   select0 else    '0';
+E3<='1' when    estado_atual    =   sequence   else    '0';
+E4<='1' when    estado_atual    =   play   else    '0';
+E5<='1' when    estado_atual    =   check  else    '0';
+E6<='1' when    estado_atual    =   init else    '0';
         
 end arc_controle;               
